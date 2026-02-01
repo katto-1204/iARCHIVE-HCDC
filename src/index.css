@@ -1,0 +1,196 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* iArchive Design System - Holy Cross of Davao College Digital Archive */
+
+@layer base {
+  :root {
+    /* Core Brand Colors - Navy Blue & Red */
+    --background: 0 0% 100%;
+    --foreground: 213 50% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 213 50% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 213 50% 12%;
+
+    /* Primary: Navy Blue #002B5B */
+    --primary: 213 100% 18%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary: Light Navy */
+    --secondary: 213 30% 95%;
+    --secondary-foreground: 213 100% 18%;
+
+    /* Muted */
+    --muted: 213 20% 96%;
+    --muted-foreground: 213 20% 40%;
+
+    /* Accent: Red #B31312 */
+    --accent: 0 83% 39%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Destructive */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 213 20% 90%;
+    --input: 213 20% 90%;
+    --ring: 213 100% 18%;
+
+    --radius: 0.5rem;
+
+    /* Sidebar - Navy themed */
+    --sidebar-background: 213 100% 18%;
+    --sidebar-foreground: 213 20% 95%;
+    --sidebar-primary: 0 0% 100%;
+    --sidebar-primary-foreground: 213 100% 18%;
+    --sidebar-accent: 213 80% 25%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 213 60% 25%;
+    --sidebar-ring: 0 83% 39%;
+
+    /* Custom tokens */
+    --navy: 213 100% 18%;
+    --navy-light: 213 60% 30%;
+    --navy-dark: 213 100% 12%;
+    --red: 0 83% 39%;
+    --red-light: 0 70% 50%;
+    --cream: 40 30% 97%;
+    --gold: 45 80% 50%;
+
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(213 100% 18%) 0%, hsl(213 80% 25%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(0 83% 39%) 0%, hsl(0 70% 50%) 100%);
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 hsl(213 50% 12% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(213 50% 12% / 0.1), 0 2px 4px -2px hsl(213 50% 12% / 0.1);
+    --shadow-lg: 0 10px 15px -3px hsl(213 50% 12% / 0.1), 0 4px 6px -4px hsl(213 50% 12% / 0.1);
+    --shadow-xl: 0 20px 25px -5px hsl(213 50% 12% / 0.1), 0 8px 10px -6px hsl(213 50% 12% / 0.1);
+    --shadow-card: 0 1px 3px 0 hsl(213 50% 12% / 0.1), 0 1px 2px -1px hsl(213 50% 12% / 0.1);
+    --shadow-card-hover: 0 10px 40px -10px hsl(213 50% 12% / 0.15);
+  }
+
+  .dark {
+    --background: 213 50% 8%;
+    --foreground: 213 20% 95%;
+
+    --card: 213 40% 12%;
+    --card-foreground: 213 20% 95%;
+
+    --popover: 213 40% 12%;
+    --popover-foreground: 213 20% 95%;
+
+    --primary: 213 60% 60%;
+    --primary-foreground: 213 100% 8%;
+
+    --secondary: 213 30% 20%;
+    --secondary-foreground: 213 20% 95%;
+
+    --muted: 213 30% 18%;
+    --muted-foreground: 213 20% 60%;
+
+    --accent: 0 70% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 213 30% 20%;
+    --input: 213 30% 20%;
+    --ring: 213 60% 60%;
+
+    --sidebar-background: 213 50% 6%;
+    --sidebar-foreground: 213 20% 90%;
+    --sidebar-primary: 213 60% 60%;
+    --sidebar-primary-foreground: 213 100% 8%;
+    --sidebar-accent: 213 40% 15%;
+    --sidebar-accent-foreground: 213 20% 95%;
+    --sidebar-border: 213 30% 15%;
+    --sidebar-ring: 0 70% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+}
+
+@layer components {
+  .archive-card {
+    @apply bg-card rounded-lg border shadow-card transition-all duration-300;
+  }
+
+  .archive-card:hover {
+    @apply shadow-card-hover -translate-y-1;
+  }
+
+  .hero-gradient {
+    background: var(--gradient-hero);
+  }
+
+  .accent-gradient {
+    background: var(--gradient-accent);
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background: var(--gradient-accent);
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out forwards;
+  }
+
+  .animate-slide-in-left {
+    animation: slideInLeft 0.5s ease-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes fadeInUp {
+    from { 
+      opacity: 0; 
+      transform: translateY(20px); 
+    }
+    to { 
+      opacity: 1; 
+      transform: translateY(0); 
+    }
+  }
+
+  @keyframes slideInLeft {
+    from { 
+      opacity: 0; 
+      transform: translateX(-20px); 
+    }
+    to { 
+      opacity: 1; 
+      transform: translateX(0); 
+    }
+  }
+}
