@@ -1,9 +1,9 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
 import {
     Table,
     TableBody,
@@ -12,30 +12,124 @@ import {
     TableHeader,
     TableRow
 } from "@/components/ui/table";
-import { Search, Upload, MoreHorizontal, Lock, Eye, Calendar, Tag } from "lucide-react";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { Search, Upload, MoreHorizontal, Lock, Eye, Calendar, Pencil, Trash2 } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useData, Material } from "@/contexts/DataContext";
+import { useToast } from "@/components/ui/use-toast";
 
-const mockMaterials = [
-    { id: "1", title: "Class of 2023 Yearbook", category: "Yearbooks", date: "2023-12-15", accessLevel: "public", views: 245 },
-    { id: "2", title: "Campus Centennial Photo Collection", category: "Photographs", date: "2023-11-20", accessLevel: "public", views: 120 },
-    { id: "3", title: "Research Journal Volume 15", category: "Publications", date: "2023-10-01", accessLevel: "public", views: 89 },
-    { id: "4", title: "Founding Charter Documents", category: "Documents", date: "1950-01-15", accessLevel: "restricted", views: 34 },
-    { id: "5", title: "Class of 2022 Yearbook", category: "Yearbooks", date: "2022-12-15", accessLevel: "public", views: 156 },
-    { id: "6", title: "Sports Championship Gallery", category: "Photographs", date: "2023-08-10", accessLevel: "public", views: 92 },
-];
+type MaterialFormData = Omit<Material, "id">;
 
 const MaterialsPage = () => {
+    const { materials, categories, addMaterial, updateMaterial, deleteMaterial } = useData();
+    const { toast } = useToast();
     const [searchTerm, setSearchTerm] = useState("");
 
-    const filteredMaterials = mockMaterials.filter(item =>
+    // Dialog states
+    const [isFormOpen, setIsFormOpen] = useState(false);
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+    const [editingMaterial, setEditingMaterial] = useState<Material | null>(null);
+    const [deletingMaterialId, setDeletingMaterialId] = useState<string | null>(null);
+
+    // Form state
+    const [formData, setFormData] = useState<MaterialFormData>({
+        title: "",
+        category: categories.length > 0 ? categories[0].name : "",
+        date: new Date().toISOString().split("T")[0],
+        accessLevel: "public",
+        views: 0,
+    });
+
+    const filteredMaterials = materials.filter(item =>
         item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.category.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    const resetForm = () => {
+        setFormData({
+            title: "",
+            category: categories.length > 0 ? categories[0].name : "",
+            date: new Date().toISOString().split("T")[0],
+            accessLevel: "public",
+            views: 0,
+        });
+        setEditingMaterial(null);
+    };
+
+    const openAddDialog = () => {
+        resetForm();
+        setIsFormOpen(true);
+    };
+
+    const openEditDialog = (material: Material) => {
+        setEditingMaterial(material);
+        setFormData({
+            title: material.title,
+            category: material.category,
+            date: material.date,
+            accessLevel: material.accessLevel,
+            views: material.views,
+        });
+        setIsFormOpen(true);
+    };
+
+    const openDeleteDialog = (id: string) => {
+        setDeletingMaterialId(id);
+        setIsDeleteOpen(true);
+    };
+
+    const handleFormSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (editingMaterial) {
+            updateMaterial(editingMaterial.id, formData);
+            toast({ title: "Material updated", description: `"${formData.title}" has been updated.` });
+        } else {
+            addMaterial(formData);
+            toast({ title: "Material added", description: `"${formData.title}" has been added.` });
+        }
+        setIsFormOpen(false);
+        resetForm();
+    };
+
+    const handleDelete = () => {
+        if (deletingMaterialId !== null) {
+            deleteMaterial(deletingMaterialId);
+            toast({ title: "Material deleted", description: "The material has been removed.", variant: "destructive" });
+        }
+        setIsDeleteOpen(false);
+        setDeletingMaterialId(null);
+    };
 
     return (
         <div className="space-y-6 animate-fade-in">
@@ -49,7 +143,7 @@ const MaterialsPage = () => {
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                <Button className="bg-[#B31312] hover:bg-[#B31312]/90">
+                <Button className="bg-[#B31312] hover:bg-[#B31312]/90" onClick={openAddDialog}>
                     <Upload className="h-4 w-4 mr-2" />
                     Upload Material
                 </Button>
@@ -112,10 +206,14 @@ const MaterialsPage = () => {
                                                     </Button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem>View Preview</DropdownMenuItem>
-                                                    <DropdownMenuItem>Edit Metadata</DropdownMenuItem>
-                                                    <DropdownMenuItem>Download File</DropdownMenuItem>
-                                                    <DropdownMenuItem className="text-destructive">Archive/Delete</DropdownMenuItem>
+                                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                    <DropdownMenuItem onClick={() => openEditDialog(item)}>
+                                                        <Pencil className="h-4 w-4 mr-2" /> Edit Metadata
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuSeparator />
+                                                    <DropdownMenuItem className="text-destructive" onClick={() => openDeleteDialog(item.id)}>
+                                                        <Trash2 className="h-4 w-4 mr-2" /> Delete Material
+                                                    </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                         </TableCell>
@@ -126,6 +224,75 @@ const MaterialsPage = () => {
                     </div>
                 </CardContent>
             </Card>
+
+            {/* Add/Edit Material Dialog */}
+            <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+                <DialogContent className="sm:max-w-[480px]">
+                    <DialogHeader>
+                        <DialogTitle>{editingMaterial ? "Edit Material" : "Upload New Material"}</DialogTitle>
+                        <DialogDescription>
+                            {editingMaterial ? "Update the material's metadata below." : "Fill in the details for the new material."}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleFormSubmit}>
+                        <div className="grid gap-4 py-4">
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="title" className="text-right">Title</Label>
+                                <Input id="title" className="col-span-3" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} required />
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="category" className="text-right">Category</Label>
+                                <Select value={formData.category} onValueChange={v => setFormData({ ...formData, category: v })}>
+                                    <SelectTrigger className="col-span-3">
+                                        <SelectValue placeholder="Select category" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {categories.map(cat => (
+                                            <SelectItem key={cat.id} value={cat.name}>{cat.name}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="date" className="text-right">Date</Label>
+                                <Input id="date" type="date" className="col-span-3" value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} required />
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="access" className="text-right">Access</Label>
+                                <Select value={formData.accessLevel} onValueChange={v => setFormData({ ...formData, accessLevel: v as "public" | "restricted" })}>
+                                    <SelectTrigger className="col-span-3">
+                                        <SelectValue placeholder="Select access level" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="public">Public</SelectItem>
+                                        <SelectItem value="restricted">Restricted</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                        <DialogFooter>
+                            <Button type="button" variant="outline" onClick={() => setIsFormOpen(false)}>Cancel</Button>
+                            <Button type="submit" className="bg-[#B31312] hover:bg-[#B31312]/90">{editingMaterial ? "Save Changes" : "Upload"}</Button>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
+
+            {/* Delete Confirmation Dialog */}
+            <AlertDialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete this material from the archive.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 };
