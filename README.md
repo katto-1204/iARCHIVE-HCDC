@@ -1,73 +1,77 @@
-# Welcome to your Lovable project
+# iARCHIVE - Digital Heritage System
 
-## Project info
+**iARCHIVE** is a premium digital archive platform designed for **Holy Cross of Davao College (HCDC)**. It provides a sophisticated interface for browsing, managing, and preserving institutional memory, yearbooks, and historical documents.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+![Project Status](https://img.shields.io/badge/status-active-success)
+![Version](https://img.shields.io/badge/version-2.0.0-blue)
 
-## How can I edit this code?
+## ✨ Features
 
-There are several ways of editing your application.
+### 🚀 Elite Visual Experience
+- **Ultra-Premium Loading Screen**: A sophisticated cinematic entry sequence with real-time progress simulation and glassmorphism.
+- **Dynamic Animations**: Scroll-triggered reveals and parallax effects integrated across all major pages (**Home, About, Collections, Materials**).
+- **Responsive Design**: Fully optimized for desktop, tablet, and mobile viewing.
 
-**Use Lovable**
+### 🔐 Administration & Security
+- **Secure Admin Panel**: Dedicated administration portal for asset management.
+- **Access Control**: Role-based access for public and restricted campus materials.
+- **Request System**: Formal process for users to request access to sensitive archives.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+### 📂 Archive Management
+- **Advanced Filtering**: Search and sort throughout digitized collections by year, category, and subject.
+- **Document Viewer**: High-fidelity metadata display following Dublin Core standards with zoom-capable previews.
 
-Changes made via Lovable will be committed automatically to this repo.
+---
 
-**Use your preferred IDE**
+## 🛠️ Technology Stack
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- **Core**: [React](https://reactjs.org/) + [Vite](https://vitejs.dev/)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Animations**: [Framer Motion](https://www.framer.com/motion/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **UI Components**: [Shadcn UI](https://ui.shadcn.com/)
+- **Icons**: [Lucide React](https://lucide.dev/)
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+---
 
-Follow these steps:
+## 🚀 Getting Started
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### Prerequisites
+- [Node.js](https://nodejs.org/) (v18 or higher)
+- [npm](https://www.npmjs.com/) or [Bun](https://bun.sh/)
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### Installation
 
-# Step 3: Install the necessary dependencies.
-npm i
+1. **Clone the repository**:
+   ```sh
+   git clone https://github.com/katto-1204/iARCHIVE-HCDC.git
+   cd iARCHIVE-HCDC
+   ```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+2. **Install dependencies**:
+   ```sh
+   npm install
+   ```
 
-**Edit a file directly in GitHub**
+3. **Start the development server**:
+   ```sh
+   npm run dev
+   ```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+---
 
-**Use GitHub Codespaces**
+## 👮 Admin Access
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+To access the administration panel, go to `/login` and use the following credentials:
 
-## What technologies are used for this project?
+| Field | Value |
+| :--- | :--- |
+| **Email** | `admin@gmail.com` |
+| **Password** | `admin123` |
 
-This project is built with:
+---
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 📄 License
 
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+© 2024 **Holy Cross of Davao College**. All rights reserved.
+Developed with emphasis on preserving institutional memory and digital heritage.

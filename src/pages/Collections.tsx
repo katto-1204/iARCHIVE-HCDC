@@ -1,3 +1,4 @@
+
 import { useState, useMemo } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -6,9 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
-import { Search, Filter, Grid, List, Calendar, Tag, Eye, Lock, SlidersHorizontal, X } from "lucide-react";
+import { Search, Filter, Grid, List, Calendar, Tag, Lock, SlidersHorizontal, X, Bookmark, BookmarkCheck } from "lucide-react";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import ParallaxSection from "@/components/ui/ParallaxSection";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 import {
   Pagination,
   PaginationContent,
@@ -18,99 +21,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-interface ArchiveItem {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  date: string;
-  accessLevel: "public" | "restricted";
-  thumbnail: string;
-  subjects: string[];
-}
-
-const mockItems: ArchiveItem[] = [
-  {
-    id: "1",
-    title: "Class of 2023 Yearbook",
-    description: "Complete yearbook featuring graduates, campus events, and memorable moments from AY 2022-2023.",
-    category: "Yearbooks",
-    date: "2023-12-15",
-    accessLevel: "public",
-    thumbnail: "/placeholder.svg",
-    subjects: ["Graduates", "Campus Life", "2023"],
-  },
-  {
-    id: "2",
-    title: "Campus Centennial Photo Collection",
-    description: "A curated collection of photographs documenting the institution's growth over 75 years.",
-    category: "Photographs",
-    date: "2023-11-20",
-    accessLevel: "public",
-    thumbnail: "/placeholder.svg",
-    subjects: ["Campus", "History", "Centennial"],
-  },
-  {
-    id: "3",
-    title: "Research Journal Volume 15",
-    description: "Latest volume featuring faculty and student research papers across various disciplines.",
-    category: "Publications",
-    date: "2023-10-01",
-    accessLevel: "public",
-    thumbnail: "/placeholder.svg",
-    subjects: ["Research", "Academic", "Faculty"],
-  },
-  {
-    id: "4",
-    title: "Founding Charter Documents",
-    description: "Original founding documents and correspondence from the institution's establishment.",
-    category: "Documents",
-    date: "1950-01-15",
-    accessLevel: "restricted",
-    thumbnail: "/placeholder.svg",
-    subjects: ["History", "Founding", "Charter"],
-  },
-  {
-    id: "5",
-    title: "Class of 2022 Yearbook",
-    description: "Yearbook commemorating the achievements and memories of the Class of 2022.",
-    category: "Yearbooks",
-    date: "2022-12-15",
-    accessLevel: "public",
-    thumbnail: "/placeholder.svg",
-    subjects: ["Graduates", "Campus Life", "2022"],
-  },
-  {
-    id: "6",
-    title: "Sports Championship Gallery",
-    description: "Photos and memorabilia from institutional sports championships throughout the decades.",
-    category: "Photographs",
-    date: "2023-08-10",
-    accessLevel: "public",
-    thumbnail: "/placeholder.svg",
-    subjects: ["Sports", "Athletics", "Championships"],
-  },
-  {
-    id: "7",
-    title: "Student Newspaper Archives 1980-1990",
-    description: "Digitized collection of student newspapers from the 1980s decade.",
-    category: "Publications",
-    date: "1990-12-31",
-    accessLevel: "public",
-    thumbnail: "/placeholder.svg",
-    subjects: ["Students", "Newspaper", "1980s"],
-  },
-  {
-    id: "8",
-    title: "Administrative Records 1960-1970",
-    description: "Administrative correspondence and meeting minutes from the early institutional period.",
-    category: "Documents",
-    date: "1970-12-31",
-    accessLevel: "restricted",
-    thumbnail: "/placeholder.svg",
-    subjects: ["Administration", "Records", "1960s"],
-  },
-];
+import { ArchiveItem, mockItems } from "@/data/mockData";
 
 const categories = ["All", "Yearbooks", "Photographs", "Publications", "Documents"];
 
@@ -118,6 +29,8 @@ const Collections = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
+  const { user, toggleSave, isAuthenticated } = useAuth();
+  const { toast } = useToast();
 
   const searchQuery = searchParams.get("search") || "";
   const selectedCategory = searchParams.get("category") || "All";
@@ -129,7 +42,6 @@ const Collections = () => {
   const filteredItems = useMemo(() => {
     let items = [...mockItems];
 
-    // Filter by search query
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       items = items.filter(
@@ -140,12 +52,10 @@ const Collections = () => {
       );
     }
 
-    // Filter by category
     if (selectedCategory !== "All") {
       items = items.filter((item) => item.category === selectedCategory);
     }
 
-    // Sort
     items.sort((a, b) => {
       const dateA = new Date(a.date).getTime();
       const dateB = new Date(b.date).getTime();
@@ -180,10 +90,34 @@ const Collections = () => {
 
   const hasActiveFilters = searchQuery || selectedCategory !== "All" || sortBy !== "newest";
 
+  const handleToggleSave = (e: React.MouseEvent, itemId: string, title: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!isAuthenticated) {
+      toast({
+        title: "Sign in required",
+        description: "Please log in to save items to your collection.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    toggleSave(itemId);
+    const isNowSaved = !user?.savedItems?.includes(itemId);
+    toast({
+      title: isNowSaved ? "Item Saved" : "Item Removed",
+      description: isNowSaved
+        ? `"${title}" has been added to your collection.`
+        : `"${title}" has been removed from your collection.`,
+    });
+  };
+
+  const isItemSaved = (itemId: string) => user?.savedItems?.includes(itemId);
+
   return (
     <Layout>
       <div className="min-h-screen bg-background">
-        {/* Header */}
         <ParallaxSection offset={50}>
           <section className="bg-muted/30 border-b">
             <div className="container py-8 md:py-12">
@@ -204,11 +138,9 @@ const Collections = () => {
           </section>
         </ParallaxSection>
 
-        {/* Search and Filters */}
         <section className="border-b sticky top-16 bg-background z-40">
           <div className="container py-4">
             <div className="flex flex-col md:flex-row gap-4">
-              {/* Search */}
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
@@ -220,7 +152,6 @@ const Collections = () => {
                 />
               </div>
 
-              {/* Filter Toggle (Mobile) */}
               <Button
                 variant="outline"
                 className="md:hidden"
@@ -230,7 +161,6 @@ const Collections = () => {
                 Filters
               </Button>
 
-              {/* Desktop Filters */}
               <div className="hidden md:flex items-center gap-3">
                 <Select value={selectedCategory} onValueChange={(value) => updateSearchParams("category", value)}>
                   <SelectTrigger className="w-40">
@@ -273,7 +203,6 @@ const Collections = () => {
               </div>
             </div>
 
-            {/* Mobile Filters */}
             {showFilters && (
               <div className="flex flex-col gap-3 pt-4 md:hidden animate-fade-in">
                 <Select value={selectedCategory} onValueChange={(value) => updateSearchParams("category", value)}>
@@ -299,7 +228,6 @@ const Collections = () => {
               </div>
             )}
 
-            {/* Active Filters */}
             {hasActiveFilters && (
               <div className="flex items-center gap-2 pt-4 flex-wrap">
                 <span className="text-sm text-muted-foreground">Active filters:</span>
@@ -329,16 +257,13 @@ const Collections = () => {
           </div>
         </section>
 
-        {/* Results */}
         <section className="container py-8">
-          {/* Results Count */}
           <div className="flex items-center justify-between mb-6">
             <p className="text-sm text-muted-foreground">
               Showing {paginatedItems.length} of {filteredItems.length} results
             </p>
           </div>
 
-          {/* Items Grid/List */}
           {paginatedItems.length > 0 ? (
             <div
               className={
@@ -358,7 +283,7 @@ const Collections = () => {
                     className={`group ${viewMode === "list" ? "block" : ""}`}
                   >
                     {viewMode === "grid" ? (
-                      <Card className="overflow-hidden h-full hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1">
+                      <Card className="overflow-hidden h-full hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1 relative group/card">
                         <div className="aspect-[4/3] bg-muted relative overflow-hidden">
                           <img
                             src={item.thumbnail}
@@ -374,6 +299,18 @@ const Collections = () => {
                               </Badge>
                             )}
                           </div>
+                          <Button
+                            variant="secondary"
+                            size="icon"
+                            className={`absolute top-3 right-3 rounded-full opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 shadow-md ${isItemSaved(item.id) ? 'bg-primary text-primary-foreground opacity-100' : 'bg-white/80 hover:bg-white text-foreground'}`}
+                            onClick={(e) => handleToggleSave(e, item.id, item.title)}
+                          >
+                            {isItemSaved(item.id) ? (
+                              <BookmarkCheck className="h-4 w-4" />
+                            ) : (
+                              <Bookmark className="h-4 w-4" />
+                            )}
+                          </Button>
                         </div>
                         <CardContent className="p-4 space-y-2">
                           <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-1">
@@ -391,7 +328,7 @@ const Collections = () => {
                         </CardContent>
                       </Card>
                     ) : (
-                      <Card className="hover:shadow-card-hover transition-all duration-300">
+                      <Card className="hover:shadow-card-hover transition-all duration-300 relative group/card">
                         <CardContent className="p-4 flex gap-4">
                           <div className="w-32 h-24 bg-muted rounded-lg overflow-hidden flex-shrink-0">
                             <img
@@ -405,7 +342,19 @@ const Collections = () => {
                               <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
                                 {item.title}
                               </h3>
-                              <div className="flex gap-2 flex-shrink-0">
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className={`h-8 w-8 rounded-full ${isItemSaved(item.id) ? 'text-primary' : 'text-muted-foreground'}`}
+                                  onClick={(e) => handleToggleSave(e, item.id, item.title)}
+                                >
+                                  {isItemSaved(item.id) ? (
+                                    <BookmarkCheck className="h-4 w-4" />
+                                  ) : (
+                                    <Bookmark className="h-4 w-4" />
+                                  )}
+                                </Button>
                                 <Badge variant="secondary">{item.category}</Badge>
                                 {item.accessLevel === "restricted" && (
                                   <Badge variant="secondary" className="bg-destructive/10 text-destructive">
@@ -450,7 +399,6 @@ const Collections = () => {
             </div>
           )}
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <Pagination className="mt-8">
               <PaginationContent>
