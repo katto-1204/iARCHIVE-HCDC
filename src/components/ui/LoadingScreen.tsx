@@ -1,66 +1,74 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useSpring } from "framer-motion";
 import { useEffect, useState } from "react";
 
 const LoadingScreen = () => {
     const [loading, setLoading] = useState(true);
+    const [progress, setProgress] = useState(0);
+
+    // Smooth spring for the progress percentage
+    const springProgress = useSpring(0, {
+        stiffness: 40,
+        damping: 20,
+        restDelta: 0.001
+    });
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            setLoading(false);
-        }, 2800);
-        return () => clearTimeout(timer);
+        // Simulate loading progress
+        const interval = setInterval(() => {
+            setProgress((prev) => {
+                if (prev >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => setLoading(false), 500);
+                    return 100;
+                }
+                const diff = Math.random() * 15;
+                return Math.min(prev + diff, 100);
+            });
+        }, 200);
+
+        return () => clearInterval(interval);
     }, []);
 
+    useEffect(() => {
+        springProgress.set(progress);
+    }, [progress, springProgress]);
+
+    // Explicitly typing variants to avoid lint errors
     const containerVariants = {
-        initial: { y: 0 },
+        initial: { clipPath: "inset(0% 0% 0% 0%)" },
         exit: {
-            y: "-100%",
+            clipPath: "inset(0% 0% 100% 0%)",
             transition: {
-                duration: 0.8,
-                ease: [0.76, 0, 0.24, 1],
+                duration: 1.2,
+                ease: [0.76, 0, 0.24, 1] as any,
                 delay: 0.2
             }
         }
     };
 
     const textVariants = {
-        initial: { opacity: 0, y: 20 },
+        initial: { opacity: 0, y: 40, rotateX: -90 },
         animate: (i: number) => ({
             opacity: 1,
             y: 0,
+            rotateX: 0,
             transition: {
-                delay: 0.5 + (i * 0.1),
-                duration: 0.8,
-                ease: [0.6, 0.01, -0.05, 0.95]
+                delay: 0.2 + (i * 0.08),
+                duration: 2.5,
+                ease: [0.16, 1, 0.3, 1] as any
             }
-        }),
-        exit: {
-            opacity: 0,
-            y: -20,
-            transition: { duration: 0.4 }
-        }
-    };
-
-    const lineVariants = {
-        initial: { scaleX: 0 },
-        animate: {
-            scaleX: 1,
-            transition: {
-                delay: 1.2,
-                duration: 1.5,
-                ease: [0.6, 0.01, -0.05, 0.95]
-            }
-        }
+        })
     };
 
     const charVariants = {
-        initial: { opacity: 0, y: 10 },
+        initial: { opacity: 0, scale: 0.8 },
         animate: (i: number) => ({
             opacity: 1,
-            y: 0,
+            scale: 1,
             transition: {
-                delay: 2 + (i * 0.05),
-                duration: 0.5
+                delay: 1.5 + (i * 0.02),
+                duration: 0.8,
+                ease: "easeOut" as any
             }
         })
     };
@@ -78,29 +86,34 @@ const LoadingScreen = () => {
                     variants={containerVariants}
                     initial="initial"
                     exit="exit"
-                    className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#002B5B] overflow-hidden"
+                    className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#001529] overflow-hidden"
                 >
+                    {/* Noise Overlay */}
+                    <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+
+                    {/* Dynamic Glassmorphism Background */}
                     <motion.div
                         animate={{
+                            x: [0, 40, 0],
+                            y: [0, -30, 0],
                             scale: [1, 1.2, 1],
-                            rotate: [0, 90, 0],
-                            opacity: [0.05, 0.1, 0.05]
                         }}
-                        transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                        className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-[#B31312]/20 blur-[100px]"
+                        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                        className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-[#B31312]/30 blur-[120px]"
                     />
                     <motion.div
                         animate={{
+                            x: [0, -50, 0],
+                            y: [0, 60, 0],
                             scale: [1, 1.3, 1],
-                            rotate: [0, -90, 0],
-                            opacity: [0.05, 0.1, 0.05]
                         }}
-                        transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                        className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-[#002B5B]/40 blur-[120px]"
+                        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+                        className="absolute bottom-[-20%] right-[-10%] w-[70%] h-[70%] rounded-full bg-[#002B5B]/60 blur-[150px]"
                     />
 
-                    <div className="relative flex flex-col items-center">
-                        <div className="overflow-hidden flex items-baseline gap-1">
+                    <div className="relative flex flex-col items-center z-10">
+                        {/* Shimmering Logo */}
+                        <div className="flex items-baseline gap-1 mb-2">
                             {brandArray.map((char, i) => (
                                 <motion.span
                                     key={`char-${i}`}
@@ -108,21 +121,47 @@ const LoadingScreen = () => {
                                     variants={textVariants}
                                     initial="initial"
                                     animate="animate"
-                                    className={`text-6xl md:text-8xl font-bold tracking-tighter ${char === 'i' ? 'text-[#B31312]' : 'text-white'}`}
+                                    className={`text-6xl md:text-9xl font-black tracking-tighter ${char === 'i' ? 'text-[#B31312]' : 'text-white'
+                                        } drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]`}
+                                    style={{ perspective: "1000px" }}
                                 >
                                     {char}
                                 </motion.span>
                             ))}
                         </div>
 
+                        {/* Progress Percentage Display */}
                         <motion.div
-                            variants={lineVariants}
-                            initial="initial"
-                            animate="animate"
-                            className="h-[2px] w-full bg-gradient-to-r from-transparent via-[#B31312] to-transparent mt-4 mb-6"
-                        />
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.8 }}
+                            className="flex flex-col items-center gap-4 mb-8"
+                        >
+                            <div className="text-white/20 font-mono text-xl md:text-2xl tracking-[0.5em] flex items-baseline">
+                                <span>
+                                    {Math.round(progress)}
+                                </span>
+                                <span className="text-xs ml-1">%</span>
+                            </div>
 
-                        <div className="flex gap-[2px]">
+                            {/* Ultra-refined Progress Line */}
+                            <div className="h-[1px] w-64 md:w-96 bg-white/5 relative overflow-hidden">
+                                <motion.div
+                                    initial={{ scaleX: 0 }}
+                                    animate={{ scaleX: progress / 100 }}
+                                    transition={{ ease: "easeOut", duration: 0.5 }}
+                                    className="absolute inset-0 bg-gradient-to-r from-transparent via-[#B31312] to-[#B31312] origin-left"
+                                />
+                                <motion.div
+                                    animate={{ left: `${progress}%` }}
+                                    transition={{ ease: "easeOut", duration: 0.5 }}
+                                    className="absolute top-1/2 -translate-y-1/2 w-4 h-[10px] bg-[#B31312] blur-[8px] opacity-80"
+                                />
+                            </div>
+                        </motion.div>
+
+                        {/* Subtitle */}
+                        <div className="flex gap-[1px] md:gap-[4px]">
                             {collegeArray.map((char, i) => (
                                 <motion.span
                                     key={`college-${i}`}
@@ -130,7 +169,7 @@ const LoadingScreen = () => {
                                     variants={charVariants}
                                     initial="initial"
                                     animate="animate"
-                                    className="text-[10px] md:text-xs uppercase tracking-[0.3em] text-white/40 font-medium whitespace-pre"
+                                    className="text-[8px] md:text-[10px] uppercase tracking-[0.4em] text-white/50 font-light whitespace-pre italic"
                                 >
                                     {char}
                                 </motion.span>
@@ -138,16 +177,21 @@ const LoadingScreen = () => {
                         </div>
                     </div>
 
-                    <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3">
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 2.5 }}
-                            className="text-[8px] uppercase tracking-[0.5em] text-white/20"
-                        >
-                            Initializing Digital Heritage
-                        </motion.div>
-                    </div>
+                    {/* Footer Info */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 0.3, y: 0 }}
+                        transition={{ delay: 2.2 }}
+                        className="absolute bottom-12 flex flex-col items-center gap-2"
+                    >
+                        <div className="flex items-center gap-4 text-[7px] uppercase tracking-[0.8em] font-medium text-white/60">
+                            <span>Authentication</span>
+                            <div className="w-1 h-1 rounded-full bg-[#B31312]" />
+                            <span>Asset Mapping</span>
+                            <div className="w-1 h-1 rounded-full bg-[#B31312]" />
+                            <span>Digital Vault</span>
+                        </div>
+                    </motion.div>
                 </motion.div>
             )}
         </AnimatePresence>
