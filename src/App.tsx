@@ -20,6 +20,7 @@ import Settings from "./pages/admin/Settings";
 import NotFound from "./pages/NotFound";
 import LoadingScreen from "./components/ui/LoadingScreen";
 import { AuthProvider } from "./contexts/AuthContext";
+import { ThemeProvider } from "./components/theme-provider";
 
 const queryClient = new QueryClient();
 
@@ -27,30 +28,32 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <AuthProvider>
-        <LoadingScreen />
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/collections" element={<Collections />} />
-            <Route path="/material/:id" element={<MaterialView />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/admin" element={<AdminDashboard />}>
-              <Route path="users" element={<Users />} />
-              <Route path="categories" element={<Categories />} />
-              <Route path="materials" element={<Materials />} />
-              <Route path="requests" element={<AccessRequests />} />
-              <Route path="logs" element={<ActivityLogs />} />
-              <Route path="settings" element={<Settings />} />
-            </Route>
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <ThemeProvider defaultTheme="light" storageKey="iarchive-theme">
+          <LoadingScreen />
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/collections" element={<Collections />} />
+              <Route path="/material/:id" element={<MaterialView />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/admin" element={<AdminDashboard />}>
+                <Route path="users" element={<Users />} />
+                <Route path="categories" element={<Categories />} />
+                <Route path="materials" element={<Materials />} />
+                <Route path="requests" element={<AccessRequests />} />
+                <Route path="logs" element={<ActivityLogs />} />
+                <Route path="settings" element={<Settings />} />
+              </Route>
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </ThemeProvider>
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>

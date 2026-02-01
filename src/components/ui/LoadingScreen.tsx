@@ -86,7 +86,7 @@ const LoadingScreen = () => {
                     variants={containerVariants}
                     initial="initial"
                     exit="exit"
-                    className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#001529] overflow-hidden"
+                    className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[hsl(var(--loading-bg))] overflow-hidden"
                 >
                     {/* Noise Overlay */}
                     <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
@@ -99,7 +99,7 @@ const LoadingScreen = () => {
                             scale: [1, 1.2, 1],
                         }}
                         transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-                        className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-[#B31312]/30 blur-[120px]"
+                        className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-[hsl(var(--loading-accent)/0.3)] blur-[120px]"
                     />
                     <motion.div
                         animate={{
@@ -108,7 +108,7 @@ const LoadingScreen = () => {
                             scale: [1, 1.3, 1],
                         }}
                         transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-                        className="absolute bottom-[-20%] right-[-10%] w-[70%] h-[70%] rounded-full bg-[#002B5B]/60 blur-[150px]"
+                        className="absolute bottom-[-20%] right-[-10%] w-[70%] h-[70%] rounded-full bg-[hsl(var(--primary)/0.4)] blur-[150px]"
                     />
 
                     <div className="relative flex flex-col items-center z-10">
@@ -121,7 +121,7 @@ const LoadingScreen = () => {
                                     variants={textVariants}
                                     initial="initial"
                                     animate="animate"
-                                    className={`text-6xl md:text-9xl font-black tracking-tighter ${char === 'i' ? 'text-[#B31312]' : 'text-white'
+                                    className={`text-6xl md:text-9xl font-black tracking-tighter ${char === 'i' ? 'text-[hsl(var(--loading-accent))]' : 'text-white'
                                         } drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]`}
                                     style={{ perspective: "1000px" }}
                                 >
@@ -150,12 +150,12 @@ const LoadingScreen = () => {
                                     initial={{ scaleX: 0 }}
                                     animate={{ scaleX: progress / 100 }}
                                     transition={{ ease: "easeOut", duration: 0.5 }}
-                                    className="absolute inset-0 bg-gradient-to-r from-transparent via-[#B31312] to-[#B31312] origin-left"
+                                    className="absolute inset-0 bg-gradient-to-r from-transparent via-[hsl(var(--loading-accent))] to-[hsl(var(--loading-accent))] origin-left"
                                 />
                                 <motion.div
                                     animate={{ left: `${progress}%` }}
                                     transition={{ ease: "easeOut", duration: 0.5 }}
-                                    className="absolute top-1/2 -translate-y-1/2 w-4 h-[10px] bg-[#B31312] blur-[8px] opacity-80"
+                                    className="absolute top-1/2 -translate-y-1/2 w-4 h-[10px] bg-[hsl(var(--loading-accent))] blur-[8px] opacity-80"
                                 />
                             </div>
                         </motion.div>
@@ -186,9 +186,9 @@ const LoadingScreen = () => {
                     >
                         <div className="flex items-center gap-4 text-[7px] uppercase tracking-[0.8em] font-medium text-white/60">
                             <span>Authentication</span>
-                            <div className="w-1 h-1 rounded-full bg-[#B31312]" />
+                            <div className="w-1 h-1 rounded-full bg-[hsl(var(--loading-accent))]" />
                             <span>Asset Mapping</span>
-                            <div className="w-1 h-1 rounded-full bg-[#B31312]" />
+                            <div className="w-1 h-1 rounded-full bg-[hsl(var(--loading-accent))]" />
                             <span>Digital Vault</span>
                         </div>
                     </motion.div>

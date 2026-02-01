@@ -1,11 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Menu, X, BookOpen, User, LogOut, ShieldCheck } from "lucide-react";
+import { Search, Menu, X, BookOpen, User, LogOut, ShieldCheck, Moon, Sun } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTheme } from "@/components/theme-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Navbar = () => {
@@ -13,6 +14,7 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const location = useLocation();
   const { user, logout, isAuthenticated } = useAuth();
+  const { theme, setTheme } = useTheme();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -52,7 +54,7 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/* Search Bar - Desktop */}
+        {/* Search Bar & Actions - Desktop */}
         <div className="hidden md:flex items-center gap-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -64,6 +66,20 @@ const Navbar = () => {
               className="w-64 pl-9 bg-muted/50"
             />
           </div>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="rounded-full"
+            title="Toggle theme"
+          >
+            {theme === "dark" ? (
+              <Sun className="h-5 w-5 text-amber-400" />
+            ) : (
+              <Moon className="h-5 w-5 text-primary" />
+            )}
+          </Button>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -142,6 +158,36 @@ const Navbar = () => {
                   <p className="text-sm font-bold">{user?.name}</p>
                   <p className="text-xs text-muted-foreground">{user?.email}</p>
                 </div>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="ml-auto rounded-full bg-background"
+                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                >
+                  {theme === "dark" ? (
+                    <Sun className="h-4 w-4 text-amber-500" />
+                  ) : (
+                    <Moon className="h-4 w-4 text-primary" />
+                  )}
+                </Button>
+              </div>
+            )}
+
+            {!isAuthenticated && (
+              <div className="flex items-center justify-between px-4 py-2 bg-muted/30 rounded-xl">
+                <span className="text-sm font-medium">Theme</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="gap-2"
+                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                >
+                  {theme === "dark" ? (
+                    <><Sun className="h-4 w-4 text-amber-500" /> Light</>
+                  ) : (
+                    <><Moon className="h-4 w-4 text-primary" /> Dark</>
+                  )}
+                </Button>
               </div>
             )}
 

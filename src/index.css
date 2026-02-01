@@ -54,6 +54,9 @@
     --sidebar-border: 213 60% 25%;
     --sidebar-ring: 0 83% 39%;
 
+    --loading-bg: 213 100% 8%;
+    --loading-accent: 0 83% 39%;
+
     /* Custom tokens */
     --navy: 213 100% 18%;
     --navy-light: 213 60% 30%;
@@ -77,42 +80,51 @@
   }
 
   .dark {
-    --background: 213 50% 8%;
-    --foreground: 213 20% 95%;
+    --background: 0 50% 3%;
+    --foreground: 0 10% 98%;
 
-    --card: 213 40% 12%;
-    --card-foreground: 213 20% 95%;
+    --card: 0 40% 6%;
+    --card-foreground: 0 10% 98%;
 
-    --popover: 213 40% 12%;
-    --popover-foreground: 213 20% 95%;
+    --popover: 0 40% 6%;
+    --popover-foreground: 0 10% 98%;
 
-    --primary: 213 60% 60%;
-    --primary-foreground: 213 100% 8%;
+    /* Primary: Red in Dark Mode */
+    --primary: 0 83% 45%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 213 30% 20%;
-    --secondary-foreground: 213 20% 95%;
+    --secondary: 0 30% 15%;
+    --secondary-foreground: 0 83% 60%;
 
-    --muted: 213 30% 18%;
-    --muted-foreground: 213 20% 60%;
+    --muted: 0 30% 10%;
+    --muted-foreground: 0 10% 60%;
 
-    --accent: 0 70% 55%;
+    /* Accent: Navy in Dark Mode */
+    --accent: 213 100% 25%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 62% 50%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 213 30% 20%;
-    --input: 213 30% 20%;
-    --ring: 213 60% 60%;
+    --border: 0 30% 20%;
+    --input: 0 30% 20%;
+    --ring: 0 83% 45%;
 
-    --sidebar-background: 213 50% 6%;
-    --sidebar-foreground: 213 20% 90%;
-    --sidebar-primary: 213 60% 60%;
-    --sidebar-primary-foreground: 213 100% 8%;
-    --sidebar-accent: 213 40% 15%;
-    --sidebar-accent-foreground: 213 20% 95%;
-    --sidebar-border: 213 30% 15%;
-    --sidebar-ring: 0 70% 55%;
+    /* Gradients for Dark Mode */
+    --gradient-hero: linear-gradient(135deg, hsl(0 83% 45%) 0%, hsl(0 60% 30%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(213 100% 25%) 0%, hsl(213 80% 40%) 100%);
+
+    --sidebar-background: 0 83% 15%;
+    --sidebar-foreground: 0 10% 95%;
+    --sidebar-primary: 0 0% 100%;
+    --sidebar-primary-foreground: 0 83% 15%;
+    --sidebar-accent: 0 70% 25%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 0 60% 25%;
+    --sidebar-ring: 213 100% 40%;
+
+    --loading-bg: 0 50% 3%;
+    --loading-accent: 0 83% 45%;
   }
 }
 
@@ -126,7 +138,12 @@
     font-family: 'Inter', sans-serif;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-semibold tracking-tight;
   }
 }
@@ -168,29 +185,36 @@
   }
 
   @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
   }
 
   @keyframes fadeInUp {
-    from { 
-      opacity: 0; 
-      transform: translateY(20px); 
+    from {
+      opacity: 0;
+      transform: translateY(20px);
     }
-    to { 
-      opacity: 1; 
-      transform: translateY(0); 
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 
   @keyframes slideInLeft {
-    from { 
-      opacity: 0; 
-      transform: translateX(-20px); 
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
     }
-    to { 
-      opacity: 1; 
-      transform: translateX(0); 
+
+    to {
+      opacity: 1;
+      transform: translateX(0);
     }
   }
 }
